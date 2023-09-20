@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlotMachineLogicController : MonoBehaviour
+public class ControLogic : MonoBehaviour
 {
     public float lastTime = 15f;
     public GameObject SingleColumn;
@@ -66,8 +65,8 @@ public class SlotMachineLogicController : MonoBehaviour
             GameObject columnObj = Instantiate(SingleColumn, WindowSlot.GetComponent<Transform>());
             columnObj.name = $"column{i}";
 
-            rowNumber = columnObj.GetComponent<SlotMachineLogicAnima>().TextList.Count;
-            columnObj.GetComponent<SlotMachineLogicAnima>().LastTime = lastTime;
+            rowNumber = columnObj.GetComponent<ColunmAnimLogic>().TextList.Count;
+            columnObj.GetComponent<ColunmAnimLogic>().LastTime = lastTime;
             lastTime += 2;
 
             columnObj.GetComponent<RectTransform>().anchoredPosition = currentPos;

@@ -3,7 +3,7 @@
 namespace Assets.scripts.AnimImg1
 {
     // 初始是 private
-    public class SlotMachineResultParser
+    public class ResultParser
     {
         public  void SlotMachineResult1(bool resultOff, int rowNumber, int columnNumber, ref List<List<int>> resultList, ref bool OneRound, ref int KeepSevenNumber, ref bool OnSevenColorRed)
         {

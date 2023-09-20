@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SlotMachineLogicAnima : MonoBehaviour
+public class ColunmAnimLogic : MonoBehaviour
 {
     public Animator ObjectAnima;
     public AnimationClip Clip;
@@ -53,7 +52,7 @@ public class SlotMachineLogicAnima : MonoBehaviour
                 monitorOneRoundLoopTime = true;
                 GameScore.OnSevenColorRed = false;
 
-                if (!runLoop) ObjectAnima.Play("slotAnim", 0, 0);
+                if (!runLoop) ObjectAnima.Play("slowAnim", 0, 0);
                 Invoke(nameof(LoopSlot), sightLoopTime);
             }
            
@@ -137,7 +136,7 @@ public class SlotMachineLogicAnima : MonoBehaviour
 
     private void ResultAnimation()
     {
-        ObjectAnima.Play("slotAnim", 0, 0);
+        ObjectAnima.Play("slowAnim", 0, 0);
        
         for (int resultIndex = 0; resultIndex < TextList.Count; resultIndex++)
         {
@@ -152,7 +151,7 @@ public class SlotMachineLogicAnima : MonoBehaviour
 
     private void NormalAnimation()
     {
-        ObjectAnima.Play("slotAnim", 0, 0);
+        ObjectAnima.Play("slowAnim", 0, 0);
         for (int animaIndex = 0; animaIndex < TextList.Count; animaIndex++)
         {
             if (animaIndex == rowNumber) TextList[animaIndex].text = Random.Range(0, TextList.Count).ToString();

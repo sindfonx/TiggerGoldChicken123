@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 1093659756}
   - component: {fileID: 1093659758}
   m_Layer: 5
-  m_Name: SlotMachineWindow
+  m_Name: Display
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 1213826346}
   - component: {fileID: 1213826347}
   m_Layer: 5
-  m_Name: SlotMachineController
+  m_Name: Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

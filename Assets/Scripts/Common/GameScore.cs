@@ -21,7 +21,7 @@ public static class GameScore
     public static bool OnSevenColorRed;
     public static int KeepSevenNumber;
 
-    public static SlotMachineResultParser slotMachineResultParser;
+    public static ResultParser slotMachineResultParser;
 
 
 
@@ -83,7 +83,7 @@ public static class GameScore
     public static void ShowResult1(bool resultOff, int rowNumber, int columnNumber)
     {
         //´k©Êªì©l
-        if (slotMachineResultParser == null) slotMachineResultParser = new SlotMachineResultParser();
+        if (slotMachineResultParser == null) slotMachineResultParser = new ResultParser();
 
         slotMachineResultParser.SlotMachineResult1(resultOff, rowNumber, columnNumber, ref resultList, ref OneRound, ref KeepSevenNumber, ref OnSevenColorRed);
     }
