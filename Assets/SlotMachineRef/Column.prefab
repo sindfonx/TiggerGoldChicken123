@@ -628,10 +628,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b22ebe89c2c8f6f4fa91d167da2d2675, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObjectAnima: {fileID: 7576455635357825397}
-  Clip: {fileID: 7400000, guid: 41c5a67c749414045aa6e07630e04649, type: 2}
-  LastTime: 5
-  TextList:
+  AnimaObj: {fileID: 7576455635357825397}
+  AnimaClip: {fileID: 7400000, guid: 41c5a67c749414045aa6e07630e04649, type: 2}
+  AnimaTime: 3
+  PerfabTextList:
   - {fileID: 7576455634987998887}
   - {fileID: 7576455635512517113}
   - {fileID: 7576455634904596608}

@@ -1,13 +1,3 @@
-// 乾淨 不要有任何雜質
-//Str
-//Daytime
-
-
-
-//靜態共用 可以共用紀錄的文本 沒有任何意義
-//動態生成 共用相同腳本物件可複用
-
-//最底層的東西
 using Assets.scripts.AnimImg1;
 using System.Collections.Generic;
 
@@ -21,6 +11,7 @@ public static class GameScore
     public static bool OnSevenColorRed;
     public static int KeepSevenNumber;
 
+    public static bool autoPlay;
     public static ResultParser slotMachineResultParser;
 
 
@@ -68,17 +59,18 @@ public static class GameScore
 
     public static void SlotMachineResult1(int rowNumber, List<int> scoreboard, int columnNumber)
     {
-        // 結果是這個 就好!
-        //TODO: 盡可能英文 不然會影響到 GIT
-
-            if (scoreboard[0] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 最大獎");
+        if (scoreboard[0] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 最大獎");
         else if (scoreboard[1] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 一獎");
-        else if(scoreboard[2] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 二獎");
-        else if(scoreboard[3] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 三獎");
-        else if(scoreboard[4] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 四獎");
-        else if(scoreboard[5] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 五獎");
-            else UnityEngine.Debug.Log("恭喜獲得 : 無獎");
-        
+        else if (scoreboard[2] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 二獎");
+        else if (scoreboard[3] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 三獎");
+        else if (scoreboard[4] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 四獎");
+        else if (scoreboard[5] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 五獎");
+        else UnityEngine.Debug.Log("恭喜獲得 : 無獎");
+    }
+
+    public static void SetAutoPlay(bool off)
+    {
+        autoPlay = off;
     }
     public static void ShowResult1(bool resultOff, int rowNumber, int columnNumber)
     {

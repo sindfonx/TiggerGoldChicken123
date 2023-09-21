@@ -16,9 +16,12 @@ public class ControLogic : MonoBehaviour
 
     private const float cleanTime = 0;
     private float currentTime;
-    private bool resultVeiwOn;
+    private bool handResultVeiwOn;
+    private bool AutoResultVeiwOn;
+
 
     private List<GameObject> bingoObjList = new();
+    private bool autoOff;
 
 
     private void Start()
@@ -65,8 +68,8 @@ public class ControLogic : MonoBehaviour
             GameObject columnObj = Instantiate(SingleColumn, WindowSlot.GetComponent<Transform>());
             columnObj.name = $"column{i}";
 
-            rowNumber = columnObj.GetComponent<ColunmAnimLogic>().TextList.Count;
-            columnObj.GetComponent<ColunmAnimLogic>().LastTime = lastTime;
+            rowNumber = columnObj.GetComponent<ColunmAnimLogic>().PerfabTextList.Count;
+            columnObj.GetComponent<ColunmAnimLogic>().AnimaTime = lastTime;
             lastTime += 2;
 
             columnObj.GetComponent<RectTransform>().anchoredPosition = currentPos;
@@ -84,17 +87,25 @@ public class ControLogic : MonoBehaviour
             { 
                 bingoObjList[i].GetComponent<RectTransform>().sizeDelta = new Vector2(10, bingoObjList[i].GetComponent<RectTransform>().sizeDelta.y);
             }
-            resultVeiwOn = true;
+            handResultVeiwOn = true;
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            for (int i = 0; i < bingoObjList.Count; i++)
+            {
+                bingoObjList[i].GetComponent<RectTransform>().sizeDelta = new Vector2(10, bingoObjList[i].GetComponent<RectTransform>().sizeDelta.y);
+            }
+            autoOff = false;
+            AutoResultVeiwOn = true;
         }
 
-        if (resultVeiwOn)
+        if (handResultVeiwOn)
         {
             currentTime += Time.deltaTime;
             if (currentTime >= lastTime)
             {
                 //GameScore.ShowResult1(resultVeiwOn, rowNumber, ColumnNumber);
-
-                if (resultVeiwOn)
+                if (handResultVeiwOn)
                 {
                     for (int i = 0; i < rowNumber - 1; i++)
                     {
@@ -105,7 +116,59 @@ public class ControLogic : MonoBehaviour
                             currentRowList.Add(currentResultListIndex);
                         }
 
-                        List<int> currentRowScoreboard = new(){0, 0, 0, 0, 0, 0};
+                        List<int> currentRowScoreboard = new() { 0, 0, 0, 0, 0, 0 };
+                        for (int k = 0; k < currentRowList.Count; k++)
+                        {
+                            if (currentRowList[k] == 7) currentRowScoreboard[0]++;
+                            else if (currentRowList[k] == 1) currentRowScoreboard[1]++;
+                            else if (currentRowList[k] == 2) currentRowScoreboard[2]++;
+                            else if (currentRowList[k] == 3) currentRowScoreboard[3]++;
+                            else if (currentRowList[k] == 4) currentRowScoreboard[4]++;
+                            else if (currentRowList[k] == 5) currentRowScoreboard[5]++;
+                        }
+
+                        for (int m = 0; m < currentRowScoreboard.Count; m++)
+                        {
+                            if (currentRowScoreboard[m] == ColumnNumber)
+                            {
+                                bingoObjList[i].GetComponent<RectTransform>().sizeDelta = new Vector2(WindowWidth - space, bingoObjList[i].GetComponent<RectTransform>().sizeDelta.y);
+                            }
+                        }
+
+                        GameScore.SlotMachineResult1(rowNumber, currentRowScoreboard, ColumnNumber);
+
+                        currentRowScoreboard.Clear();
+                        currentRowList.Clear();
+                    }
+                    GameScore.resultList.Clear();
+                    GameScore.OneRound = false;
+
+                    if (GameScore.KeepSevenNumber >= 3) GameScore.OnSevenColorRed = true;
+                    GameScore.KeepSevenNumber = 0;
+
+                    currentTime = cleanTime;
+                    handResultVeiwOn = false;
+                }
+            }
+        }
+
+        if (AutoResultVeiwOn)
+        {
+            currentTime += Time.deltaTime;
+            if (currentTime >= lastTime)
+            {
+                if (AutoResultVeiwOn)
+                {
+                    for (int i = 0; i < rowNumber - 1; i++)
+                    {
+                        List<int> currentRowList = new();
+                        for (int j = 0; j < GameScore.resultList.Count; j++)
+                        {
+                            int currentResultListIndex = GameScore.resultList[j][i];
+                            currentRowList.Add(currentResultListIndex);
+                        }
+
+                        List<int> currentRowScoreboard = new() { 0, 0, 0, 0, 0, 0 };
                         for (int k = 0; k < currentRowList.Count; k++)
                         {
                             if (currentRowList[k] == 7) currentRowScoreboard[0]++;
@@ -130,6 +193,17 @@ public class ControLogic : MonoBehaviour
                         currentRowList.Clear();
                     }
 
+                    for (int i = 0; i < bingoObjList.Count; i++)
+                    {
+                        if (bingoObjList[i].GetComponent<RectTransform>().sizeDelta.x > 10)
+                        {
+                            autoOff = true;
+                            AutoResultVeiwOn = false;
+                            break;
+                        }
+                        Invoke("RunAuto", 2f);
+                    }
+
                     GameScore.resultList.Clear();
                     GameScore.OneRound = false;
 
@@ -137,9 +211,15 @@ public class ControLogic : MonoBehaviour
                     GameScore.KeepSevenNumber = 0;
 
                     currentTime = cleanTime;
-                    resultVeiwOn = false;
                 }
             }
+        }
+    }
+    public void RunAuto()
+    {
+        if (!autoOff)
+        {
+            GameScore.SetAutoPlay(true);
         }
     }
 }
