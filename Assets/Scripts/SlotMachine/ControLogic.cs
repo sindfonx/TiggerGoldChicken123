@@ -1,13 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ControLogic : MonoBehaviour
 {
-    public float lastTime = 15f;
-    public GameObject SingleColumn;
-    public GameObject SingleBingoLine;
-    public GameObject WindowSlot;
+    public GameObject PerfabColumn;
+    public GameObject PerfabBingoLine;
+    public GameObject ObjColunmRenge;
+    public Button ObjHandButton;
+    public Button ObjAutoButton;
+    public Button ObjAddButton;
+    public Button ObjReduceButton;
+    public Text ObjAutoText;
+
+    public float OneRoundTime = 15f;
     public int ColumnNumber;
+    private int autoNumber = 0;
 
     private int WindowWidth;
     private float currentPosX;
@@ -16,42 +24,83 @@ public class ControLogic : MonoBehaviour
 
     private const float cleanTime = 0;
     private float currentTime;
-    private bool handResultVeiwOn;
+    private bool monitorHandReslutOn;
     private bool AutoResultVeiwOn;
 
 
-    private List<GameObject> bingoObjList = new();
+    private List<GameObject> bingolinesList = new();
     private bool autoOff;
 
 
     private void Start()
     {
-        SetWidth();
+        ObjHandButton.onClick.AddListener(PlayHand);
+        ObjAutoButton.onClick.AddListener(PlayAuto);
+        ObjAddButton.onClick.AddListener(AddAutoNumber);
+        ObjReduceButton.onClick.AddListener(ReduceAutoNumber);
 
-        for (int i = 1; i < 10; i+=2)
+        SetAutoText();
+        CreateColunmReange();
+        CreateBingoLine();
+    }
+
+    private void PlayHand()
+    {
+        CleanBingoLinesWidht();
+        monitorHandReslutOn = true;
+    }
+    private void PlayAuto()
+    {
+        CleanBingoLinesWidht();
+         AutoResultVeiwOn = true;
+    }
+    private void AddAutoNumber()
+    {
+        autoNumber++;
+    }
+    private void ReduceAutoNumber()
+    {
+        autoNumber--;
+    }
+
+    private void SetAutoText()
+    {
+        if (autoNumber <= 0) ObjAutoText.text = "Auto : Null";
+        else ObjAutoText.text = $"Auto : {autoNumber}";
+    }
+    private void CleanBingoLinesWidht()
+    {
+        for (int i = 0; i < bingolinesList.Count; i++)
         {
-            Vector2 currentPos = new()
+            Vector2 initWidht = new()
+            {
+                x = 10,
+                y = bingolinesList[i].GetComponent<RectTransform>().sizeDelta.y
+            };
+            bingolinesList[i].GetComponent<RectTransform>().sizeDelta = initWidht;
+        }
+    }
+    private void CreateBingoLine()
+    {
+        for (int i = 1; i < 10; i += 2)
+        {
+            Vector2 newPos = new()
             {
                 x = 0,
                 y = -50 * i
             };
 
-            GameObject singleBingoLineObj = Instantiate(SingleBingoLine, WindowSlot.GetComponent<Transform>());
-            singleBingoLineObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(currentPos.x, currentPos.y);
-            bingoObjList.Add(singleBingoLineObj);
+            GameObject newBingoLine = Instantiate(PerfabBingoLine, ObjColunmRenge.GetComponent<Transform>());
+            newBingoLine.GetComponent<RectTransform>().anchoredPosition = newPos;
+            bingolinesList.Add(newBingoLine);
         }
-
     }
-
-    private void SetWidth()
+    private void CreateColunmReange()
     {
-        //BG widht 
         WindowWidth = ColumnNumber * 150;
 
-        //起始頭 
         currentPosX = -(WindowWidth / 2);
 
-        //平均距離
         space = WindowWidth / (ColumnNumber + 1);
 
         int lastTime = 3;
@@ -65,7 +114,7 @@ public class ControLogic : MonoBehaviour
                 z = 0
             };
 
-            GameObject columnObj = Instantiate(SingleColumn, WindowSlot.GetComponent<Transform>());
+            GameObject columnObj = Instantiate(PerfabColumn, ObjColunmRenge.GetComponent<Transform>());
             columnObj.name = $"column{i}";
 
             rowNumber = columnObj.GetComponent<ColunmAnimLogic>().PerfabTextList.Count;
@@ -75,151 +124,133 @@ public class ControLogic : MonoBehaviour
             columnObj.GetComponent<RectTransform>().anchoredPosition = currentPos;
         }
 
-        RectTransform windowSlotRectObj = WindowSlot.GetComponent<RectTransform>();
+        RectTransform windowSlotRectObj = ObjColunmRenge.GetComponent<RectTransform>();
         windowSlotRectObj.sizeDelta = new Vector2(WindowWidth - space, windowSlotRectObj.sizeDelta.y);
     }
 
+
+
+
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            for (int i = 0; i < bingoObjList.Count; i++)
-            { 
-                bingoObjList[i].GetComponent<RectTransform>().sizeDelta = new Vector2(10, bingoObjList[i].GetComponent<RectTransform>().sizeDelta.y);
-            }
-            handResultVeiwOn = true;
-        }
-        if (Input.GetMouseButtonDown(1))
-        {
-            for (int i = 0; i < bingoObjList.Count; i++)
-            {
-                bingoObjList[i].GetComponent<RectTransform>().sizeDelta = new Vector2(10, bingoObjList[i].GetComponent<RectTransform>().sizeDelta.y);
-            }
-            autoOff = false;
-            AutoResultVeiwOn = true;
-        }
+        SetAutoText();
 
-        if (handResultVeiwOn)
+        if (monitorHandReslutOn)
         {
             currentTime += Time.deltaTime;
-            if (currentTime >= lastTime)
+            if (currentTime >= OneRoundTime)
             {
                 //GameScore.ShowResult1(resultVeiwOn, rowNumber, ColumnNumber);
-                if (handResultVeiwOn)
+                for (int i = 0; i < rowNumber - 1; i++)
                 {
-                    for (int i = 0; i < rowNumber - 1; i++)
-                    {
-                        List<int> currentRowList = new();
-                        for (int j = 0; j < GameScore.resultList.Count; j++)
-                        {
-                            int currentResultListIndex = GameScore.resultList[j][i];
-                            currentRowList.Add(currentResultListIndex);
-                        }
+                    SortRowNumber(i, out List<int> resultRowList);
+                    AnalyzeResultList(resultRowList, out List<int> scoreList);
 
-                        List<int> currentRowScoreboard = new() { 0, 0, 0, 0, 0, 0 };
-                        for (int k = 0; k < currentRowList.Count; k++)
-                        {
-                            if (currentRowList[k] == 7) currentRowScoreboard[0]++;
-                            else if (currentRowList[k] == 1) currentRowScoreboard[1]++;
-                            else if (currentRowList[k] == 2) currentRowScoreboard[2]++;
-                            else if (currentRowList[k] == 3) currentRowScoreboard[3]++;
-                            else if (currentRowList[k] == 4) currentRowScoreboard[4]++;
-                            else if (currentRowList[k] == 5) currentRowScoreboard[5]++;
-                        }
+                    SetScaleBingoLines(i, scoreList);
+                    GameScore.SlotMachineShowResult(scoreList, ColumnNumber);
 
-                        for (int m = 0; m < currentRowScoreboard.Count; m++)
-                        {
-                            if (currentRowScoreboard[m] == ColumnNumber)
-                            {
-                                bingoObjList[i].GetComponent<RectTransform>().sizeDelta = new Vector2(WindowWidth - space, bingoObjList[i].GetComponent<RectTransform>().sizeDelta.y);
-                            }
-                        }
-
-                        GameScore.SlotMachineResult1(rowNumber, currentRowScoreboard, ColumnNumber);
-
-                        currentRowScoreboard.Clear();
-                        currentRowList.Clear();
-                    }
-                    GameScore.resultList.Clear();
-                    GameScore.OneRound = false;
-
-                    if (GameScore.KeepSevenNumber >= 3) GameScore.OnSevenColorRed = true;
-                    GameScore.KeepSevenNumber = 0;
-
-                    currentTime = cleanTime;
-                    handResultVeiwOn = false;
+                    scoreList.Clear();
+                    resultRowList.Clear();
                 }
+                InitGameScoreSlotMachineValue();
+
+                currentTime = cleanTime;
+                monitorHandReslutOn = false;
             }
         }
 
         if (AutoResultVeiwOn)
         {
             currentTime += Time.deltaTime;
-            if (currentTime >= lastTime)
+            if (currentTime >= OneRoundTime)
             {
                 if (AutoResultVeiwOn)
                 {
                     for (int i = 0; i < rowNumber - 1; i++)
                     {
-                        List<int> currentRowList = new();
-                        for (int j = 0; j < GameScore.resultList.Count; j++)
-                        {
-                            int currentResultListIndex = GameScore.resultList[j][i];
-                            currentRowList.Add(currentResultListIndex);
-                        }
+                        SortRowNumber(i, out List<int> resultRowList);
+                        AnalyzeResultList(resultRowList, out List<int> scoreList);
 
-                        List<int> currentRowScoreboard = new() { 0, 0, 0, 0, 0, 0 };
-                        for (int k = 0; k < currentRowList.Count; k++)
-                        {
-                            if (currentRowList[k] == 7) currentRowScoreboard[0]++;
-                            else if (currentRowList[k] == 1) currentRowScoreboard[1]++;
-                            else if (currentRowList[k] == 2) currentRowScoreboard[2]++;
-                            else if (currentRowList[k] == 3) currentRowScoreboard[3]++;
-                            else if (currentRowList[k] == 4) currentRowScoreboard[4]++;
-                            else if (currentRowList[k] == 5) currentRowScoreboard[5]++;
-                        }
+                        SetScaleBingoLines(i, scoreList);
+                        GameScore.SlotMachineShowResult(scoreList, ColumnNumber);
 
-                        for (int m = 0; m < currentRowScoreboard.Count; m++)
-                        {
-                            if (currentRowScoreboard[m] == ColumnNumber)
-                            {
-                                bingoObjList[i].GetComponent<RectTransform>().sizeDelta = new Vector2(WindowWidth - space, bingoObjList[i].GetComponent<RectTransform>().sizeDelta.y);
-                            }
-                        }
-
-                        GameScore.SlotMachineResult1(rowNumber, currentRowScoreboard, ColumnNumber);
-
-                        currentRowScoreboard.Clear();
-                        currentRowList.Clear();
+                        scoreList.Clear();
+                        resultRowList.Clear();
                     }
 
-                    for (int i = 0; i < bingoObjList.Count; i++)
+                    for (int i = 0; i < bingolinesList.Count; i++)
                     {
-                        if (bingoObjList[i].GetComponent<RectTransform>().sizeDelta.x > 10)
+                        if (bingolinesList[i].GetComponent<RectTransform>().sizeDelta.x > 10)
                         {
-                            autoOff = true;
                             AutoResultVeiwOn = false;
+                            autoOff = true;
                             break;
                         }
-                        Invoke("RunAuto", 2f);
+                        Invoke(nameof(RunAuto), 2f);
                     }
 
-                    GameScore.resultList.Clear();
-                    GameScore.OneRound = false;
-
-                    if (GameScore.KeepSevenNumber >= 3) GameScore.OnSevenColorRed = true;
-                    GameScore.KeepSevenNumber = 0;
+                    InitGameScoreSlotMachineValue();
 
                     currentTime = cleanTime;
                 }
             }
         }
     }
+
+    private  void InitGameScoreSlotMachineValue()
+    {
+        GameScore.SlotMachineColunmList.Clear();
+        GameScore.SlotMachineUnlockOneRound = false;
+
+        if (GameScore.SlotMachineKeepSevenNumber >= 3) GameScore.SlotMachineOnSevenColorRed = true;
+        GameScore.SlotMachineKeepSevenNumber = 0;
+    }
+
+    private void SetScaleBingoLines(int indexRow, List<int> scoreList)
+    {
+        for (int i = 0; i < scoreList.Count; i++)
+        {
+            if (scoreList[i] == ColumnNumber)
+            {
+                Vector2 newPos = new()
+                {
+                    x = WindowWidth - space,
+                    y = bingolinesList[indexRow].GetComponent<RectTransform>().sizeDelta.y
+                };
+                bingolinesList[indexRow].GetComponent<RectTransform>().sizeDelta = newPos;
+            }
+        }
+    }
+
+    private void AnalyzeResultList(List<int> resultRowList, out List<int> scoreList)
+    {
+        scoreList = new() { 0, 0, 0, 0, 0, 0 };
+        for (int i = 0; i < resultRowList.Count; i++)
+        {
+            if (resultRowList[i] == 7) scoreList[0]++;
+            else if (resultRowList[i] == 1) scoreList[1]++;
+            else if (resultRowList[i] == 2) scoreList[2]++;
+            else if (resultRowList[i] == 3) scoreList[3]++;
+            else if (resultRowList[i] == 4) scoreList[4]++;
+            else if (resultRowList[i] == 5) scoreList[5]++;
+        }
+    }
+
+    private void SortRowNumber(int indexRow, out List<int> resultRowLists)
+    {
+        resultRowLists = new();
+        for (int i = 0; i < GameScore.SlotMachineColunmList.Count; i++)
+        {
+            int colunmIndex = GameScore.SlotMachineColunmList[i][indexRow];
+            resultRowLists.Add(colunmIndex);
+        }
+    }
+
     public void RunAuto()
     {
         if (!autoOff)
         {
-            GameScore.SetAutoPlay(true);
+            GameScore.SetSlotMachineAutoPlay(true);
         }
     }
 }

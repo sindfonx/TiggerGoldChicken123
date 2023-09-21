@@ -638,6 +638,8 @@ MonoBehaviour:
   - {fileID: 7576455636328170334}
   - {fileID: 5850507188545900069}
   - {fileID: 87570418619690}
+  ObjHandButton: {fileID: 3460876249470347780, guid: efcec34183babb74cae1036c95f286eb, type: 3}
+  ObjAutoButton: {fileID: 5726142659754575161, guid: bb7ab1fb33f2c0947a672cd2001c2f54, type: 3}
   LogOff: 0
 --- !u!1 &7576455635512516999
 GameObject:

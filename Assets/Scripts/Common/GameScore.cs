@@ -6,12 +6,12 @@ public static class GameScore
     public static int Score;
     public static bool  viewText;
 
-    public static List<List<int>> resultList = new();
-    public static bool OneRound;
-    public static bool OnSevenColorRed;
-    public static int KeepSevenNumber;
+    public static List<List<int>> SlotMachineColunmList = new();
+    public static bool SlotMachineUnlockOneRound;
+    public static bool SlotMachineOnSevenColorRed;
+    public static int SlotMachineKeepSevenNumber;
 
-    public static bool autoPlay;
+    public static bool SlotMachineAutoPlay;
     public static ResultParser slotMachineResultParser;
 
 
@@ -57,7 +57,7 @@ public static class GameScore
         else UnityEngine.Debug.Log("無獎");
     }
 
-    public static void SlotMachineResult1(int rowNumber, List<int> scoreboard, int columnNumber)
+    public static void SlotMachineShowResult( List<int> scoreboard, int columnNumber)
     {
         if (scoreboard[0] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 最大獎");
         else if (scoreboard[1] == columnNumber) UnityEngine.Debug.Log("恭喜獲得 : 一獎");
@@ -68,16 +68,16 @@ public static class GameScore
         else UnityEngine.Debug.Log("恭喜獲得 : 無獎");
     }
 
-    public static void SetAutoPlay(bool off)
+    public static void SetSlotMachineAutoPlay(bool off)
     {
-        autoPlay = off;
+        SlotMachineAutoPlay = off;
     }
     public static void ShowResult1(bool resultOff, int rowNumber, int columnNumber)
     {
         //惰性初始
         if (slotMachineResultParser == null) slotMachineResultParser = new ResultParser();
 
-        slotMachineResultParser.SlotMachineResult1(resultOff, rowNumber, columnNumber, ref resultList, ref OneRound, ref KeepSevenNumber, ref OnSevenColorRed);
+        slotMachineResultParser.SlotMachineResult1(resultOff, rowNumber, columnNumber, ref SlotMachineColunmList, ref SlotMachineUnlockOneRound, ref SlotMachineKeepSevenNumber, ref SlotMachineOnSevenColorRed);
     }
 
 }
