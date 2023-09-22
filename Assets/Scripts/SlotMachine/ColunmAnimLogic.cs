@@ -54,14 +54,16 @@ public class ColunmAnimLogic : MonoBehaviour
 
     private void PlayAuto()
     {
-        if (!GameScore.SlotMachineAutoPlay)
+        if (GameScore.SlotMachineSetAutoNumber > 0)
         {
-            if (!GameScore.SlotMachineUnlockOneRound)
+            if (!GameScore.SlotMachineAutoPlay)
             {
-                RoundOneAnima("AutoLoopSlot");
+                if (!GameScore.SlotMachineUnlockOneRound)
+                {
+                    RoundOneAnima("AutoLoopSlot");
+                }
             }
         }
-       
     }
     private void RoundOneAnima(string method)
     {

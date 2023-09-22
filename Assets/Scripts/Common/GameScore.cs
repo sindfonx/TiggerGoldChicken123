@@ -11,6 +11,7 @@ public static class GameScore
     public static bool SlotMachineOnSevenColorRed;
     public static int SlotMachineKeepSevenNumber;
 
+    public static int SlotMachineSetAutoNumber;
     public static bool SlotMachineAutoPlay;
     public static ResultParser slotMachineResultParser;
 

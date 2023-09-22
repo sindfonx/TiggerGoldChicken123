@@ -194,7 +194,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Add
+  m_Text: Reduce
 --- !u!222 &358725604
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1128,8 +1128,8 @@ MonoBehaviour:
   ObjAddButton: {fileID: 682271389}
   ObjReduceButton: {fileID: 448431651}
   ObjAutoText: {fileID: 1864022572}
-  OneRoundTime: 12
-  ColumnNumber: 3
+  OneRoundTime: 10
+  ColumnNumber: 2
 --- !u!4 &1975438696
 Transform:
   m_ObjectHideFlags: 0

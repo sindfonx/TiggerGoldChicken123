@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,6 @@ public class ControLogic : MonoBehaviour
 
     public float OneRoundTime = 15f;
     public int ColumnNumber;
-    private int autoNumber = 0;
 
     private int WindowWidth;
     private float currentPosX;
@@ -29,7 +29,6 @@ public class ControLogic : MonoBehaviour
 
 
     private List<GameObject> bingolinesList = new();
-    private bool autoOff;
 
 
     private void Start()
@@ -39,34 +38,51 @@ public class ControLogic : MonoBehaviour
         ObjAddButton.onClick.AddListener(AddAutoNumber);
         ObjReduceButton.onClick.AddListener(ReduceAutoNumber);
 
-        SetAutoText();
+        MonitorSetAutoText();
         CreateColunmReange();
         CreateBingoLine();
     }
 
+
+
     private void PlayHand()
     {
-        CleanBingoLinesWidht();
-        monitorHandReslutOn = true;
+        if (!monitorHandReslutOn)
+        {
+            CleanBingoLinesWidht();
+            monitorHandReslutOn = true;
+        }
     }
     private void PlayAuto()
     {
-        CleanBingoLinesWidht();
-         AutoResultVeiwOn = true;
+        if (GameScore.SlotMachineSetAutoNumber != 0)
+        {
+            if (!AutoResultVeiwOn)
+            {
+                CleanBingoLinesWidht();
+
+                AutoResultVeiwOn = true;
+            }
+        }
     }
     private void AddAutoNumber()
     {
-        autoNumber++;
+        GameScore.SlotMachineSetAutoNumber++;
     }
     private void ReduceAutoNumber()
     {
-        autoNumber--;
+        GameScore.SlotMachineSetAutoNumber--;
     }
 
-    private void SetAutoText()
+    private void MonitorSetAutoText()
     {
-        if (autoNumber <= 0) ObjAutoText.text = "Auto : Null";
-        else ObjAutoText.text = $"Auto : {autoNumber}";
+        if (GameScore.SlotMachineSetAutoNumber <= 0) 
+        { 
+            ObjAutoText.text = "Auto : Null";
+            GameScore.SlotMachineSetAutoNumber = 0;
+        } 
+        else ObjAutoText.text = $"Auto : {GameScore.SlotMachineSetAutoNumber}";
+        Invoke(nameof(MonitorSetAutoText), Time.deltaTime);
     }
     private void CleanBingoLinesWidht()
     {
@@ -133,7 +149,6 @@ public class ControLogic : MonoBehaviour
 
     void Update()
     {
-        SetAutoText();
 
         if (monitorHandReslutOn)
         {
@@ -161,39 +176,48 @@ public class ControLogic : MonoBehaviour
 
         if (AutoResultVeiwOn)
         {
+            
             currentTime += Time.deltaTime;
             if (currentTime >= OneRoundTime)
             {
-                if (AutoResultVeiwOn)
+                for (int i = 0; i < rowNumber - 1; i++)
                 {
-                    for (int i = 0; i < rowNumber - 1; i++)
-                    {
-                        SortRowNumber(i, out List<int> resultRowList);
-                        AnalyzeResultList(resultRowList, out List<int> scoreList);
+                    SortRowNumber(i, out List<int> resultRowList);
+                    AnalyzeResultList(resultRowList, out List<int> scoreList);
 
-                        SetScaleBingoLines(i, scoreList);
-                        GameScore.SlotMachineShowResult(scoreList, ColumnNumber);
+                    SetScaleBingoLines(i, scoreList);
+                    GameScore.SlotMachineShowResult(scoreList, ColumnNumber);
 
-                        scoreList.Clear();
-                        resultRowList.Clear();
-                    }
-
-                    for (int i = 0; i < bingolinesList.Count; i++)
-                    {
-                        if (bingolinesList[i].GetComponent<RectTransform>().sizeDelta.x > 10)
-                        {
-                            AutoResultVeiwOn = false;
-                            autoOff = true;
-                            break;
-                        }
-                        Invoke(nameof(RunAuto), 2f);
-                    }
-
-                    InitGameScoreSlotMachineValue();
-
-                    currentTime = cleanTime;
+                    scoreList.Clear();
+                    resultRowList.Clear();
                 }
+                PlayingAutoNumberZeroStop();
+
+                InitGameScoreSlotMachineValue();
+
+                currentTime = cleanTime;
             }
+
+        }
+    }
+
+    private void PlayingAutoNumberZeroStop()
+    {
+        ReduceAutoNumber();
+        if (GameScore.SlotMachineSetAutoNumber == 0) AutoResultVeiwOn = false;
+        Invoke(nameof(RunAuto), 1.5f);
+    }
+
+    private void PlayingAutoPassStop()
+    {
+        for (int i = 0; i < bingolinesList.Count; i++)
+        {
+            if (bingolinesList[i].GetComponent<RectTransform>().sizeDelta.x > 10)
+            {
+                AutoResultVeiwOn = false;
+                break;
+            }
+            Invoke(nameof(RunAuto), 2f);
         }
     }
 
@@ -248,9 +272,10 @@ public class ControLogic : MonoBehaviour
 
     public void RunAuto()
     {
-        if (!autoOff)
+        if (AutoResultVeiwOn)
         {
             GameScore.SetSlotMachineAutoPlay(true);
+            CleanBingoLinesWidht();
         }
     }
 }
