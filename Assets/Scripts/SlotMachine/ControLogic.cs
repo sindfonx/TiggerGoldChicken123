@@ -8,6 +8,7 @@ public class ControLogic : MonoBehaviour
     public GameObject PerfabColumn;
     public GameObject PerfabBingoLine;
     public GameObject ObjColunmRenge;
+    public Button ObjAnimSame;
     public Button ObjHandButton;
     public Button ObjAutoButton;
     public Button ObjAddButton;
@@ -27,12 +28,15 @@ public class ControLogic : MonoBehaviour
     private bool monitorHandReslutOn;
     private bool AutoResultVeiwOn;
 
+    private bool animaSameOff;
+
 
     private List<GameObject> bingolinesList = new();
 
 
     private void Start()
     {
+        ObjAnimSame.onClick.AddListener(SetAnimSame);
         ObjHandButton.onClick.AddListener(PlayHand);
         ObjAutoButton.onClick.AddListener(PlayAuto);
         ObjAddButton.onClick.AddListener(AddAutoNumber);
@@ -43,7 +47,32 @@ public class ControLogic : MonoBehaviour
         CreateBingoLine();
     }
 
+    private void SetAnimSame()
+    {
+        float timeNumber = 3f;
 
+        if (!animaSameOff)
+        {
+            for (int i = 0; i < ColumnNumber; i++)
+            {
+                GameObject colunm = GameObject.Find("Canvas/ColunmRange").transform.GetChild(i).gameObject;
+                colunm.GetComponent<ColunmAnimLogic>().AnimaTime = timeNumber;
+            }
+            ObjAnimSame.GetComponent<Image>().color = Color.red; 
+            animaSameOff = true;
+        }
+        else
+        {
+            for (int i = 0; i < ColumnNumber; i++)
+            {
+                GameObject colunm = GameObject.Find("Canvas/ColunmRange").transform.GetChild(i).gameObject;
+                colunm.GetComponent<ColunmAnimLogic>().AnimaTime = timeNumber;
+                timeNumber += 2f;
+            }
+            ObjAnimSame.GetComponent<Image>().color = Color.white;
+            animaSameOff = false;
+        }
+    }
 
     private void PlayHand()
     {
