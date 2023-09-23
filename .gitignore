@@ -4,3 +4,5 @@
 /Logs
 /*.sln
 /*.csproj
+/.vs
+/obj
