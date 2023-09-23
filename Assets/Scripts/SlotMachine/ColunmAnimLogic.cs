@@ -30,12 +30,14 @@ public class ColunmAnimLogic : MonoBehaviour
     private int resultIndex;
     private const int cleanResultIndex = 0;
 
-    void Start()
+    public void Init(Button objHandButton, Button objAutoButton)
     {
-        ObjHandButton = GameObject.Find("Canvas/ButtonHandPlay").GetComponent<Button>();
+        //ObjHandButton = GameObject.Find("Canvas/ButtonHandPlay").GetComponent<Button>();
+        ObjHandButton = objHandButton;
         ObjHandButton.onClick.AddListener(PlayHand);
 
-        ObjAutoButton = GameObject.Find("Canvas/ButtonAutoPlay").GetComponent<Button>();
+        //ObjAutoButton = GameObject.Find("Canvas/ButtonAutoPlay").GetComponent<Button>();
+        ObjAutoButton = objAutoButton;
         ObjAutoButton.onClick.AddListener(PlayAuto);
 
         AnimaClipLenght = AnimaClip.length;

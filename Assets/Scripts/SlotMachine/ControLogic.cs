@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -160,10 +159,12 @@ public class ControLogic : MonoBehaviour
             };
 
             GameObject columnObj = Instantiate(PerfabColumn, ObjColunmRenge.GetComponent<Transform>());
+            ColunmAnimLogic colunm = columnObj.GetComponent<ColunmAnimLogic>();
+            colunm.Init(ObjHandButton, ObjAutoButton);
             columnObj.name = $"column{i}";
 
-            rowNumber = columnObj.GetComponent<ColunmAnimLogic>().PerfabTextList.Count;
-            columnObj.GetComponent<ColunmAnimLogic>().AnimaTime = lastTime;
+            rowNumber = colunm.PerfabTextList.Count;
+            colunm.AnimaTime = lastTime;
             lastTime += 2;
 
             columnObj.GetComponent<RectTransform>().anchoredPosition = currentPos;
